@@ -33,9 +33,9 @@ public class ItemController {
 
         //sku对象
         map.put("skuInfo",pmsSkuInfo);
-//        //销售属性列表
-//        List<PmsProductSaleAttr> pmsProductSaleAttrs = spuService.spuSaleAttrListCheckBySku(pmsSkuInfo.getProductId(),pmsSkuInfo.getId());
-//        map.put("spuSaleAttrListCheckBySku",pmsProductSaleAttrs);
+        //销售属性列表
+        List<PmsProductSaleAttr> pmsProductSaleAttrs = spuService.spuSaleAttrListCheckBySku(pmsSkuInfo.getProductId(),pmsSkuInfo.getId());
+        map.put("spuSaleAttrListCheckBySku",pmsProductSaleAttrs);
 //
 //        // 查询当前sku的spu的其他sku的集合的hash表
 //        Map<String, String> skuSaleAttrHash = new HashMap<>();
