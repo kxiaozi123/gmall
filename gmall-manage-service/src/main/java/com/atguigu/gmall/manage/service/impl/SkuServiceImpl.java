@@ -93,8 +93,8 @@ public class SkuServiceImpl implements SkuService {
         } else {
             // 如果缓存中没有，查询mysql
 
-            // 设置分布式锁
-            String OK = jedis.set("sku:" + skuId + ":lock", "1", "nx", "px", 10);
+            // 设置分布式锁,拿到锁10秒过期
+            String OK = jedis.set("sku:" + skuId + ":lock", "1", "nx", "px", 10*1000);
             if(StringUtils.isNotBlank(OK)&&OK.equals("OK"))
             {
                 //设置成功
@@ -109,6 +109,8 @@ public class SkuServiceImpl implements SkuService {
                     // 为了防止缓存穿透,将null或者空字符串值设置给redis
                     jedis.setex("sku:"+skuId+":info",60*3,JSON.toJSONString(""));
                 }
+                //在访问mysql后，将mysql的分布式锁释放掉
+                jedis.del("sku:" + skuId + ":lock");
             }
             else
             {
