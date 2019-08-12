@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class SkuServiceImpl implements SkuService {
@@ -92,9 +93,9 @@ public class SkuServiceImpl implements SkuService {
             pmsSkuInfo = JSON.parseObject(skuJson, PmsSkuInfo.class);
         } else {
             // 如果缓存中没有，查询mysql
-
-            // 设置分布式锁,拿到锁10秒过期
-            String OK = jedis.set("sku:" + skuId + ":lock", "1", "nx", "px", 10*1000);
+            // 设置分布式锁,拿到锁10秒过期,v为token
+            String token = UUID.randomUUID().toString();
+            String OK = jedis.set("sku:" + skuId + ":lock", token, "nx", "px", 10*1000);
             if(StringUtils.isNotBlank(OK)&&OK.equals("OK"))
             {
                 //设置成功
@@ -110,7 +111,14 @@ public class SkuServiceImpl implements SkuService {
                     jedis.setex("sku:"+skuId+":info",60*3,JSON.toJSONString(""));
                 }
                 //在访问mysql后，将mysql的分布式锁释放掉
-                jedis.del("sku:" + skuId + ":lock");
+                //用token确认删除的是自己的锁
+                String lockToken = jedis.get("sku:" + skuId + ":lock");
+                if(StringUtils.isNotBlank(lockToken)&&lockToken.equals(token))
+                {
+                    jedis.del("sku:" + skuId + ":lock");
+                }
+
+
             }
             else
             {
@@ -172,6 +180,19 @@ public class SkuServiceImpl implements SkuService {
         List<PmsSkuInfo> pmsSkuInfos = pmsSkuInfoMapper.selectSkuSaleAttrValueListBySpu(productId);
 
         return pmsSkuInfos;
+    }
+
+    @Override
+    public List<PmsSkuInfo> getAllSku() {
+        List<PmsSkuInfo> pmsSkuInfoList = pmsSkuInfoMapper.selectAll();
+        for (PmsSkuInfo pmsSkuInfo : pmsSkuInfoList) {
+            PmsSkuAttrValue pmsSkuAttrValue=new PmsSkuAttrValue();
+            String skuId = pmsSkuInfo.getId();
+            pmsSkuAttrValue.setSkuId(skuId);
+            List<PmsSkuAttrValue> pmsSkuAttrValueList = pmsSkuAttrValueMapper.select(pmsSkuAttrValue);
+            pmsSkuInfo.setSkuAttrValueList(pmsSkuAttrValueList);
+        }
+        return pmsSkuInfoList;
     }
 
 
