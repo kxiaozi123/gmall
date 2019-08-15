@@ -1,4 +1,4 @@
-package com.atguigu.gmall.util;
+package com.atguigu.gmall.util.utils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;

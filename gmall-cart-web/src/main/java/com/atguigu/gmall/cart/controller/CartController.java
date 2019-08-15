@@ -5,7 +5,8 @@ import com.atguigu.gmall.user.bean.OmsCartItem;
 import com.atguigu.gmall.user.bean.PmsSkuInfo;
 import com.atguigu.gmall.user.service.CartService;
 import com.atguigu.gmall.user.service.SkuService;
-import com.atguigu.gmall.util.CookieUtil;
+import com.atguigu.gmall.util.annotations.LoginRequired;
+import com.atguigu.gmall.util.utils.CookieUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -23,7 +24,19 @@ public class CartController {
     SkuService skuService;
     @Reference
     CartService cartService;
+
+
+    @RequestMapping("/toTrade")
+    @LoginRequired(loginSuccess = true)
+    public String toTrade(HttpServletRequest request,String isChecked, String skuId,ModelMap modelMap)
+    {
+        String memberId= (String) request.getAttribute("memberId");
+        String nickname= (String) request.getAttribute("nickname");
+        return "toTrade";
+    }
+
     @RequestMapping("/checkCart")
+    @LoginRequired(loginSuccess = false)
     public String checkCart(String isChecked, String skuId,ModelMap modelMap) {
 
         String memberId = "1";
@@ -46,6 +59,7 @@ public class CartController {
     }
 
     @RequestMapping("/cartList")
+    @LoginRequired(loginSuccess = false)
     public String cartList(HttpServletRequest request, ModelMap modelMap) {
         List<OmsCartItem> omsCartItems = new ArrayList<>();
         String memberId = "1";
@@ -86,6 +100,7 @@ public class CartController {
     }
 
     @RequestMapping("/addToCart")
+    @LoginRequired(loginSuccess = false)
     public String addToCart(String skuId, int quantity, HttpServletRequest request, HttpServletResponse response) {
         List<OmsCartItem> omsCartItems = new ArrayList<>();
         //调用商品服务查询商品信息

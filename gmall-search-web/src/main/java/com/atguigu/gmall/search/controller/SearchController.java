@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.atguigu.gmall.user.bean.*;
 import com.atguigu.gmall.user.service.AttrService;
 import com.atguigu.gmall.user.service.SearchService;
+import com.atguigu.gmall.util.annotations.LoginRequired;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -126,6 +127,7 @@ public class SearchController {
 
 
     @RequestMapping("/index")
+    @LoginRequired(loginSuccess = false)
     public String index() {
         return "index";
     }
