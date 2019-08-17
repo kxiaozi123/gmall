@@ -36,6 +36,7 @@ public class OmsCartItem implements Serializable{
     private String productSn;
     private String productAttr;
     private String isChecked;
+
     @Transient
     private BigDecimal totalPrice;
 

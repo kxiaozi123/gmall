@@ -62,7 +62,7 @@ public class CartServiceImpl implements CartService {
 
         // 同步到redis缓存中
         Jedis jedis = redisUtil.getJedis();
-        //把List转化为map
+
         Map<String,String> map = new HashMap<>();
         for (OmsCartItem cartItem : omsCartItems) {
             cartItem.setTotalPrice(cartItem.getPrice().multiply(cartItem.getQuantity()));
